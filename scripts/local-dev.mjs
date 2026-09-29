@@ -52,7 +52,7 @@ function contentType(filePath) {
 
 function serveStatic(req, res) {
   let urlPath = req.url.split("?")[0];
-  if (urlPath === "/") urlPath = "/sample-landing.html";
+  if (urlPath === "/") urlPath = "/index.html";
   let filePath = path.normalize(path.join(PUBLIC, urlPath));
   if (!path.extname(filePath) && fs.existsSync(filePath + ".html")) filePath += ".html";
   if (!filePath.startsWith(PUBLIC)) {
@@ -62,7 +62,7 @@ function serveStatic(req, res) {
   }
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
-    res.end('Not found. Open <a href="/sample-landing.html">/sample-landing.html</a>');
+    res.end('Not found. Open <a href="/">home</a> or <a href="/sample-landing">/sample-landing</a>');
     return;
   }
   res.writeHead(200, {
@@ -112,7 +112,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   const missing = ["GEMINI_API_KEY", "GEMINI_MODEL"].filter((name) => !process.env[name]);
   console.log(`\n  Language Plugin local server`);
-  console.log(`  Page:    http://localhost:${PORT}/sample-landing.html`);
+  console.log(`  Home:    http://localhost:${PORT}/`);
   console.log(`  Snippet: http://localhost:${PORT}/embed.js`);
   console.log(`  API:     http://localhost:${PORT}/api/translate`);
   console.log(`  Gemini:  ${missing.length ? "MISSING " + missing.join(", ") + " in .env" : process.env.GEMINI_MODEL}\n`);

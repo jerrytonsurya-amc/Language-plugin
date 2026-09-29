@@ -91,4 +91,6 @@ Reads `.env` and serves `public/` plus `/api/translate` at `http://localhost:345
 | `functions/index.js` | Cloud Function `/api/translate` with Firestore cache |
 | `scripts/local-dev.mjs` | Local server for `npm run dev` |
 | `scripts/firebase.mjs` | Runs the Firebase CLI with settings from `.env` |
-| `public/sample-landing.html` | Shriram sample landing page |
+| `public/index.html` | Site home (Shriram sample landing) |
+| `public/sample-landing.html` | Same page; `/sample-landing` rewrites to home when deployed |
+| `public/plugin-demo.html` | Minimal embed snippet demo |

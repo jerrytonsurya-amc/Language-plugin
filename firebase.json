@@ -4,6 +4,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/sample-landing",
+        "destination": "/index.html"
+      },
+      {
         "source": "/api/translate",
         "function": {
           "functionId": "translate",
