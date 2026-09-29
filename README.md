@@ -68,6 +68,18 @@ npm run deploy
 
 `npm run deploy` reads `.env`, deploys to `FIREBASE_PROJECT_ID`, writes `GEMINI_MODEL` to `functions/.env`, and saves `GEMINI_API_KEY` to Secret Manager whenever it changes.
 
+### Deploy on Vercel
+
+Static files come from `public/`; translation uses the serverless route `api/translate.js` (same Gemini logic as local dev).
+
+1. Import the GitHub repo in Vercel (root directory = repo root, not `public/` only).
+2. In **Project → Settings → Environment Variables**, add:
+   - `GEMINI_API_KEY` (same value as in `.env`)
+   - `GEMINI_MODEL` (e.g. `gemini-3.1-flash-lite`)
+3. Redeploy. `embed.js` will call `https://YOUR_DOMAIN/api/translate` automatically.
+
+Firestore caching is only used on Firebase; Vercel calls Gemini directly (still works, slightly higher API usage until you deploy Firebase or add cache later).
+
 ## Local development
 
 ```bash
@@ -91,6 +103,8 @@ Reads `.env` and serves `public/` plus `/api/translate` at `http://localhost:345
 | `functions/index.js` | Cloud Function `/api/translate` with Firestore cache |
 | `scripts/local-dev.mjs` | Local server for `npm run dev` |
 | `scripts/firebase.mjs` | Runs the Firebase CLI with settings from `.env` |
+| `api/translate.js` | Vercel serverless `/api/translate` |
+| `vercel.json` | Vercel rewrites and function timeout |
 | `public/index.html` | Site home (Shriram sample landing) |
 | `public/sample-landing.html` | Same page; `/sample-landing` rewrites to home when deployed |
 | `public/plugin-demo.html` | Minimal embed snippet demo |

@@ -1,0 +1,8 @@
+{
+  "rewrites": [{ "source": "/sample-landing", "destination": "/index.html" }],
+  "functions": {
+    "api/translate.js": {
+      "maxDuration": 60
+    }
+  }
+}
