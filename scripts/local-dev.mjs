@@ -1,6 +1,6 @@
 /**
  * Local dev: static files from public/ + POST /api/translate (Gemini).
- * Usage: npm run dev   (reads GEMINI_API_KEY from .env.local, which is gitignored)
+ * Usage: npm run dev   (reads settings from .env, which is gitignored)
  */
 import http from "node:http";
 import fs from "node:fs";
@@ -12,24 +12,17 @@ const require = createRequire(import.meta.url);
 const { parseRequest, translateTexts } = require("../functions/translate-core.js");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PUBLIC = path.join(__dirname, "..", "public");
-const PORT = Number(process.env.PORT || 3456);
+const ROOT = path.join(__dirname, "..");
+const PUBLIC = path.join(ROOT, "public");
 
-function loadEnvLocal() {
-  const envPath = path.join(__dirname, "..", ".env.local");
-  if (!fs.existsSync(envPath)) return;
-  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
-    const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
-    if (!m || process.env[m[1]]) continue;
-    let val = m[2].trim();
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-      val = val.slice(1, -1);
-    }
-    process.env[m[1]] = val;
-  }
+try {
+  process.loadEnvFile(path.join(ROOT, ".env"));
+} catch (e) {
+  console.error("Missing .env file. Copy .env.example to .env and fill in your keys.");
+  process.exit(1);
 }
 
-loadEnvLocal();
+const PORT = Number(process.env.PORT || 3456);
 
 function sendJson(res, status, body) {
   res.writeHead(status, {
@@ -93,19 +86,13 @@ const server = http.createServer((req, res) => {
     });
     req.on("end", async () => {
       try {
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-          sendJson(res, 500, { error: "GEMINI_API_KEY not set. Add it to .env.local" });
-          return;
-        }
-
         const request = parseRequest(JSON.parse(body || "{}"));
         if (request.error) {
           sendJson(res, 400, { error: request.error });
           return;
         }
 
-        const translated = await translateTexts(apiKey, request.language, request.texts);
+        const translated = await translateTexts(request.language, request.texts);
         const translations = {};
         request.texts.forEach((t, i) => {
           translations[t] = translated[i];
@@ -123,10 +110,10 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  const hasKey = Boolean(process.env.GEMINI_API_KEY);
+  const missing = ["GEMINI_API_KEY", "GEMINI_MODEL"].filter((name) => !process.env[name]);
   console.log(`\n  Language Plugin local server`);
   console.log(`  Page:    http://localhost:${PORT}/sample-landing.html`);
   console.log(`  Snippet: http://localhost:${PORT}/embed.js`);
   console.log(`  API:     http://localhost:${PORT}/api/translate`);
-  console.log(`  Gemini key: ${hasKey ? "loaded" : "MISSING — set GEMINI_API_KEY in .env.local"}\n`);
+  console.log(`  Gemini:  ${missing.length ? "MISSING " + missing.join(", ") + " in .env" : process.env.GEMINI_MODEL}\n`);
 });

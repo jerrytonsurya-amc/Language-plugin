@@ -1,4 +1,3 @@
-const GEMINI_MODEL = "gemini-3.1-flash-lite";
 const MAX_BATCH = 40;
 const MAX_TEXT_LEN = 2000;
 
@@ -26,7 +25,15 @@ function parseRequest(body) {
   return { language, texts };
 }
 
-async function callGemini(apiKey, language, texts) {
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is not set. Add it to .env`);
+  return value;
+}
+
+async function callGemini(language, texts) {
+  const model = requireEnv("GEMINI_MODEL");
+  const apiKey = requireEnv("GEMINI_API_KEY");
   const prompt = `You translate website text from English to ${LANG_NAMES[language]}.
 Translate every string in the JSON array below and return a JSON array of the same length, in the same order.
 Keep URLs, email addresses, numbers, currency amounts and placeholders such as {name} or %s unchanged.
@@ -35,7 +42,7 @@ Return only the translations.
 ${JSON.stringify(texts)}`;
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
@@ -64,15 +71,15 @@ ${JSON.stringify(texts)}`;
   }
 }
 
-async function translateTexts(apiKey, language, texts) {
-  const result = await callGemini(apiKey, language, texts);
+async function translateTexts(language, texts) {
+  const result = await callGemini(language, texts);
 
   if (result.length !== texts.length) {
     if (texts.length === 1) return texts;
     const mid = Math.ceil(texts.length / 2);
     const [left, right] = await Promise.all([
-      translateTexts(apiKey, language, texts.slice(0, mid)),
-      translateTexts(apiKey, language, texts.slice(mid)),
+      translateTexts(language, texts.slice(0, mid)),
+      translateTexts(language, texts.slice(mid)),
     ]);
     return left.concat(right);
   }
@@ -80,4 +87,4 @@ async function translateTexts(apiKey, language, texts) {
   return texts.map((t, i) => (typeof result[i] === "string" && result[i].trim() ? result[i].trim() : t));
 }
 
-module.exports = { GEMINI_MODEL, LANG_NAMES, parseRequest, translateTexts };
+module.exports = { LANG_NAMES, parseRequest, translateTexts };

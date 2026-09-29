@@ -4,10 +4,10 @@
   "scripts": {
     "dev": "node scripts/local-dev.mjs",
     "sample": "node scripts/local-dev.mjs",
-    "serve": "firebase emulators:start",
-    "deploy": "firebase deploy",
-    "deploy:hosting": "firebase deploy --only hosting",
-    "deploy:functions": "firebase deploy --only functions"
+    "serve": "node scripts/firebase.mjs emulators:start",
+    "deploy": "node scripts/firebase.mjs deploy",
+    "deploy:hosting": "node scripts/firebase.mjs deploy --only hosting",
+    "deploy:functions": "node scripts/firebase.mjs deploy --only functions"
   },
   "engines": {
     "node": "20"

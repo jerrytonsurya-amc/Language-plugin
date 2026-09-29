@@ -58,8 +58,13 @@
     <div class="card">
       <h2>Embed on any site</h2>
       <p>Paste this inside <code>&lt;head&gt;</code> on any website:</p>
-      <pre id="snippet">&lt;script src="https://language-plugin-b251c.web.app/embed.js"&gt;&lt;/script&gt;</pre>
+      <pre data-snippet translate="no">&lt;script src="{ORIGIN}/embed.js"&gt;&lt;/script&gt;</pre>
     </div>
 
+    <script>
+      document.querySelectorAll("[data-snippet]").forEach(function (el) {
+        el.textContent = el.textContent.replace(/\{ORIGIN\}/g, location.origin);
+      });
+    </script>
   </body>
 </html>

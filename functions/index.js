@@ -1,12 +1,9 @@
 const crypto = require("crypto");
 const { onRequest } = require("firebase-functions/v2/https");
-const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const { parseRequest, translateTexts } = require("./translate-core");
 
 admin.initializeApp();
-
-const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 function docId(text, language) {
   return crypto.createHash("sha256").update(text, "utf8").digest("hex").slice(0, 32) + "_" + language;
@@ -47,7 +44,7 @@ async function writeCache(db, language, pairs) {
 
 exports.translate = onRequest(
   {
-    secrets: [geminiApiKey],
+    secrets: ["GEMINI_API_KEY"],
     cors: true,
     maxInstances: 20,
     timeoutSeconds: 120,
@@ -72,7 +69,7 @@ exports.translate = onRequest(
       const missing = texts.filter((t) => !Object.prototype.hasOwnProperty.call(translations, t));
 
       if (missing.length > 0) {
-        const fresh = await translateTexts(geminiApiKey.value(), language, missing);
+        const fresh = await translateTexts(language, missing);
         const pairs = missing.map((original, i) => [original, fresh[i]]);
         pairs.forEach(([original, translated]) => {
           translations[original] = translated;

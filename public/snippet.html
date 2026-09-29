@@ -23,14 +23,20 @@
   <body>
     <h1>Copy this snippet</h1>
     <p>Add it once, inside <code>&lt;head&gt;</code>, so a saved language is applied before the page shows:</p>
-    <pre>&lt;script src="https://language-plugin-b251c.web.app/embed.js"&gt;&lt;/script&gt;</pre>
+    <pre data-snippet translate="no">&lt;script src="{ORIGIN}/embed.js"&gt;&lt;/script&gt;</pre>
 
     <h2>Exclude content from translation</h2>
-    <pre>&lt;span translate="no"&gt;Brand Name&lt;/span&gt;</pre>
+    <pre translate="no">&lt;span translate="no"&gt;Brand Name&lt;/span&gt;</pre>
 
     <h2>Self-hosting embed.js</h2>
-    <pre>&lt;script src="/js/embed.js" data-api-url="https://language-plugin-b251c.web.app/api/translate"&gt;&lt;/script&gt;</pre>
+    <pre data-snippet translate="no">&lt;script src="/js/embed.js" data-api-url="{ORIGIN}/api/translate"&gt;&lt;/script&gt;</pre>
 
     <p>Programmatic API: <code>LanguagePlugin.setLanguage('hi')</code>, <code>LanguagePlugin.refresh()</code></p>
+
+    <script>
+      document.querySelectorAll("[data-snippet]").forEach(function (el) {
+        el.textContent = el.textContent.replace(/\{ORIGIN\}/g, location.origin);
+      });
+    </script>
   </body>
 </html>

@@ -3,14 +3,32 @@
 Embeddable snippet for any website: floating language button (right, vertically centered) with **Tamil**, **Hindi**, **Malayalam**, **Telugu**, and **Kannada**. The page stays **English** until the visitor picks a language.
 
 - **Firebase Hosting** serves `embed.js` and routes `/api/translate` to the Cloud Function
-- **Firebase Cloud Functions** call Gemini (`gemini-3.1-flash-lite`) with the API key kept server-side
+- **Firebase Cloud Functions** call Gemini with the API key kept server-side
 - **Firebase Firestore** caches translations shared by all visitors (optional; translation still works without it)
+
+## Configuration (`.env`)
+
+All keys and settings live in `.env` at the project root, which is gitignored. Start from the template:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Used by |
+|----------|---------|
+| `FIREBASE_PROJECT_ID` | `npm run deploy` / `npm run serve` (which Firebase project to use) |
+| `GEMINI_API_KEY` | Translation API (local server, and Secret Manager in production) |
+| `GEMINI_MODEL` | Translation API (Gemini model name) |
+| `PORT` | Local dev server |
+| `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_MESSAGING_SENDER_ID`, `FIREBASE_APP_ID` | Stored for reference; not read by the current code |
 
 ## Snippet (paste inside `<head>` on any site)
 
 ```html
-<script src="https://language-plugin-b251c.web.app/embed.js"></script>
+<script src="https://YOUR_FIREBASE_PROJECT_ID.web.app/embed.js"></script>
 ```
+
+After deploying, `https://YOUR_FIREBASE_PROJECT_ID.web.app/snippet.html` shows the exact snippet for your project.
 
 What it does on the host site:
 
@@ -30,10 +48,10 @@ Placing the script in `<head>` without `defer` prevents a flash of English on re
   <span translate="no">Brand Name</span>
   ```
 
-- If you host `embed.js` yourself, point it at the API:
+- The snippet sends translation requests to the same server it was loaded from. If you host `embed.js` yourself, point it at the API:
 
   ```html
-  <script src="/js/embed.js" data-api-url="https://language-plugin-b251c.web.app/api/translate"></script>
+  <script src="/js/embed.js" data-api-url="https://YOUR_FIREBASE_PROJECT_ID.web.app/api/translate"></script>
   ```
 
 - JavaScript API: `LanguagePlugin.setLanguage("hi")`, `LanguagePlugin.getLanguage()`, `LanguagePlugin.refresh()`.
@@ -45,11 +63,10 @@ Cloud Functions and secrets need the Firebase **Blaze** (pay-as-you-go) plan.
 ```bash
 firebase login --reauth
 cd functions && npm install && cd ..
-firebase functions:secrets:set GEMINI_API_KEY   # paste the Gemini key when prompted
-firebase deploy
+npm run deploy
 ```
 
-Demo after deploy: `https://language-plugin-b251c.web.app/sample-landing.html`
+`npm run deploy` reads `.env`, deploys to `FIREBASE_PROJECT_ID`, writes `GEMINI_MODEL` to `functions/.env`, and saves `GEMINI_API_KEY` to Secret Manager whenever it changes.
 
 ## Local development
 
@@ -57,11 +74,11 @@ Demo after deploy: `https://language-plugin-b251c.web.app/sample-landing.html`
 npm run dev
 ```
 
-Reads `GEMINI_API_KEY` from `.env.local` (gitignored) and serves `public/` plus `/api/translate` at `http://localhost:3456`. Any other local site can load `http://localhost:3456/embed.js` to test.
+Reads `.env` and serves `public/` plus `/api/translate` at `http://localhost:3456`. Any other local site can load `http://localhost:3456/embed.js` to test.
 
 ## Security notes
 
-- The Gemini key must only live in `.env.local` (local) and Cloud Functions secrets (production), never in `embed.js`.
+- Keys belong only in `.env` (and Secret Manager in production), never in `embed.js` or committed files.
 - The API accepts requests from any website, so anyone who finds it can use your Gemini quota. Set a budget alert in Google Cloud.
 - Rotate any API key that was shared in chat.
 
@@ -73,4 +90,5 @@ Reads `GEMINI_API_KEY` from `.env.local` (gitignored) and serves `public/` plus 
 | `functions/translate-core.js` | Gemini request logic shared by production and local dev |
 | `functions/index.js` | Cloud Function `/api/translate` with Firestore cache |
 | `scripts/local-dev.mjs` | Local server for `npm run dev` |
+| `scripts/firebase.mjs` | Runs the Firebase CLI with settings from `.env` |
 | `public/sample-landing.html` | Shriram sample landing page |

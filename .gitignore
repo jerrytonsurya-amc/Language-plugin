@@ -3,6 +3,8 @@ node_modules/
 *.log
 .env
 .env.*
-!.env.local.example
+!.env.example
+.firebaserc
 functions/.env
+functions/.secret.local
 functions/node_modules/

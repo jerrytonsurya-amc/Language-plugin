@@ -12,7 +12,6 @@
   var BATCH_SIZE = 35;
   var PARALLEL_REQUESTS = 4;
   var REFETCH_INTERVAL_MS = 3000;
-  var DEFAULT_API_URL = "https://language-plugin-b251c.web.app/api/translate";
   var SKIP_SELECTOR =
     "script,style,noscript,template,textarea,code,svg,iframe,[translate='no'],.notranslate," + HOST_TAG;
   var ATTR_TARGETS = [
@@ -34,8 +33,7 @@
 
   var script = document.currentScript;
   var config = window.LanguagePluginConfig || {};
-  var apiUrl =
-    config.apiUrl || (script && script.getAttribute("data-api-url")) || apiUrlFromScript() || DEFAULT_API_URL;
+  var apiUrl = config.apiUrl || (script && script.getAttribute("data-api-url")) || apiUrlFromScript();
 
   function apiUrlFromScript() {
     if (!script || !script.src) return null;
@@ -341,6 +339,9 @@
   }
 
   function postTranslate(language, texts) {
+    if (!apiUrl) {
+      return Promise.reject(new Error("No translation API URL. Add data-api-url to the snippet's script tag."));
+    }
     return fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
