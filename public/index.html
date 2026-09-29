@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Language Plugin — Demo</title>
+    <script src="/embed.js"></script>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 48px auto;
+        padding: 0 20px;
+        color: #0f172a;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 1.75rem;
+      }
+      code {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Language Plugin Demo</h1>
+    <p>
+      This page is in English by default. Use the floating globe on the right to switch to Tamil,
+      Hindi, Malayalam, Telugu, or Kannada.
+    </p>
+
+    <div class="card">
+      <h2>About this product</h2>
+      <p>
+        Our platform helps teams publish content in multiple Indian languages without rebuilding
+        their website. Add one snippet and visitors choose their language.
+      </p>
+      <button type="button" title="Get started">Get started</button>
+    </div>
+
+    <div class="card">
+      <h2>Embed on any site</h2>
+      <p>Paste this inside <code>&lt;head&gt;</code> on any website:</p>
+      <pre id="snippet">&lt;script src="https://language-plugin-b251c.web.app/embed.js"&gt;&lt;/script&gt;</pre>
+    </div>
+
+  </body>
+</html>

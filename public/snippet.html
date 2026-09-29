@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Language Plugin Snippet</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+      pre {
+        background: #111827;
+        color: #f9fafb;
+        padding: 16px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Copy this snippet</h1>
+    <p>Add it once, inside <code>&lt;head&gt;</code>, so a saved language is applied before the page shows:</p>
+    <pre>&lt;script src="https://language-plugin-b251c.web.app/embed.js"&gt;&lt;/script&gt;</pre>
+
+    <h2>Exclude content from translation</h2>
+    <pre>&lt;span translate="no"&gt;Brand Name&lt;/span&gt;</pre>
+
+    <h2>Self-hosting embed.js</h2>
+    <pre>&lt;script src="/js/embed.js" data-api-url="https://language-plugin-b251c.web.app/api/translate"&gt;&lt;/script&gt;</pre>
+
+    <p>Programmatic API: <code>LanguagePlugin.setLanguage('hi')</code>, <code>LanguagePlugin.refresh()</code></p>
+  </body>
+</html>
