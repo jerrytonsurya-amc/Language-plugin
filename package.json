@@ -10,6 +10,6 @@
     "deploy:functions": "node scripts/firebase.mjs deploy --only functions"
   },
   "engines": {
-    "node": "20"
+    "node": "24.x"
   }
 }
